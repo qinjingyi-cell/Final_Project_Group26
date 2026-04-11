@@ -33,7 +33,12 @@ class SudokuGenerator:
 	Parameters: None
 	Return: list[list]
     '''
-    def get_board(self):
+# board = [  [1,1,1,2,2,2,3,3,3],   [1,1,1,2,2,2,3,3,3],    [1,1,1,2,2,2,3,3,3],
+#     [4,4,4,5,5,5,6,6,6],   [4,4,4,5,5,5,6,6,6],   [4,4,4,5,5,5,6,6,6],
+#     [7,7,7,8,8,8,9,9,9],   [7,7,7,8,8,8,9,9,9],   [7,7,7,8,8,8,9,9,9]  ]
+# board[grid][number (0-8)]
+
+    def get_board(self): 
         return self.board
 
     '''
@@ -43,8 +48,20 @@ class SudokuGenerator:
 	Parameters: None
 	Return: None
     '''
-    def print_board(self):
-        pass
+    def print_board(self):  # Input: board[grid][numbers (0-8)] Output: rows[row]
+        rows = [[],[],[],[],[],[],[],[],[]]
+        count = 0
+        n1 = 0
+        n2 = 3
+
+        for grid in self.board:
+            if count % self.row_length == 0 and count != 0: # Lists in rows change every self.row_lenght (9)
+                  n1 += 3
+                  n2 += 3
+            for grid_row in range(n1,n2):
+                  rows[grid_row].extend(grid[((grid_row-n1)*3):((grid_row-n1)*3)+3])
+                  count +=1
+        [print(row) for row in rows]
 
     '''
 	Determines if num is contained in the specified row (horizontal) of the board
