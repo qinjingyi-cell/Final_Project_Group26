@@ -22,10 +22,15 @@ class Board:
 
 
     def draw(self):
+
         for i in range(10):
-            pygame.draw.line(self.screen, "black", (i*80, 0), (i*80,720), 4)
-        for i in range(10):
-            pygame.draw.line(self.screen, "black", (0, i * 80), (720, i*80), 4)
+            if i % 3 == 0:
+                line_width = 4
+            else:
+                line_width = 2
+
+            pygame.draw.line(self.screen, "black", (i*70, 0), (i*70,630), line_width)
+            pygame.draw.line(self.screen, "black", (0, i * 70), (630, i*70), line_width)
 
 
     def select(self, row, col):
