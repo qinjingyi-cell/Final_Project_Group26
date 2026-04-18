@@ -7,6 +7,7 @@ class Board:
         self.width = width
         self.height = height
         self.screen = screen
+        self.difficulty = difficulty
 
         if difficulty == 'easy':
             self.removed_cell = 30
@@ -21,8 +22,10 @@ class Board:
 
 
     def draw(self):
-        self.screen = pygame.display.set_mode((540, 540))
-        self.screen.fill("lightblue")
+        for i in range(10):
+            pygame.draw.line(self.screen, "black", (i*80, 0), (i*80,720), 4)
+        for i in range(10):
+            pygame.draw.line(self.screen, "black", (0, i * 80), (720, i*80), 4)
 
 
     def select(self, row, col):
