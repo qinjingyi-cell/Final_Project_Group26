@@ -36,33 +36,49 @@ class Board:
 
     def draw(self):
 
-        for i in range(10):
+        for i in range(10):             # draw grid
             if i % 3 == 0:
                 line_width = 4
             else:
                 line_width = 2
 
-            pygame.draw.line(self.screen, "black", (i*70, 0), (i*70,630), line_width)
-            pygame.draw.line(self.screen, "black", (0, i * 70), (630, i*70), line_width)
+            pygame.draw.line(self.screen, "white", (i*70, 0), (i*70,630), line_width)
+            pygame.draw.line(self.screen, "white", (0, i * 70), (630, i*70), line_width)
 
-        for row in self.cells:
+        for row in self.cells:          # draw cells (cell class function)
             for cell in row:
                 cell.draw()
 
+    '''
+    Toggle .selected attribute of the given Cell if it has no value.
+    '''
     def select(self, row, col):
-        pass
+        self.selected = self.cells[col][row]
+        print(self.selected)
+        if self.selected.value == 0:
+            if self.selected.selected == False:
+                self.selected.selected = True
+            elif self.selected.selected == True:
+                self.selected.selected = False
+                self.selected = None
 
-
-    def click(self, x, y):
-        pass
+    '''
+    When click
+    input: x-position and y-position and output: row and col if it is between the displayed board (630x630)
+    '''
+    def click(self, x, y):  
+        ordered_pair = (x//70,y//70)
+        return ordered_pair if all(coord < 9 for coord in ordered_pair) else None
 
 
     def clear(self):
-        pass
+        ### Clear sketched value
+        if self.selected:
+            self.selected.sketched_value = None
 
 
     def sketch(self, value):
-        pass
+        self.selected.sketched_value = value
 
 
     def place_number(self, value):

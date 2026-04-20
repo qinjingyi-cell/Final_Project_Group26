@@ -1,18 +1,21 @@
 import pygame
+import sys
 from board import Board
 
 
 #reusable class for making buttons - Aaron
 class Button:
-    def __init__(self, x, y, width, height, text, color, text_color='black'):
+    def __init__(self, x, y, width, height, text, color, text_color='white'):
         self.rect = pygame.Rect(x, y, width, height)
+        self.back_rect = pygame.Rect(x-5,y-5,width+5,height+5)
         self.text = text
         self.color = color
         self.text_color = text_color
 
     def draw_button(self, screen):
+        pygame.draw.rect(screen, (129, 188, 214), self.back_rect)
         pygame.draw.rect(screen, self.color, self.rect)
-        font = pygame.font.SysFont('Georgia', 40)
+        font = pygame.font.SysFont('Georgia', 35)
         text_render = font.render(self.text, True, self.text_color)
         text_pos = text_render.get_rect(center=self.rect.center)
         screen.blit(text_render, text_pos)
@@ -20,14 +23,14 @@ class Button:
     def button_click(self, pos):
         return self.rect.collidepoint(pos)
 
-#funtions
+#functions
 
 def draw_start(screen, buttons):
-    screen.fill('white')
+    screen.fill('light blue')
 
     font = pygame.font.SysFont('Georgia', 40)
-    title = font.render('Welcome to Sudoku!', True, 'black')
-    difficulty_text = font.render('Select Game Mode:', True, 'black')
+    title = font.render('Welcome to Sudoku!', True, 'white')
+    difficulty_text = font.render('Select Game Mode:', True, 'white')
 
     screen_width = screen.get_width()
     title_pos = title.get_rect(center=(screen_width/2, 146))
@@ -48,30 +51,35 @@ def main():
 
     state = 'start'
 
-    easy_button = Button(107.5,450,100,50, 'Easy', "green")
+    easy_button = Button(107.5,450,100,50, 'Easy', (110, 220, 80))
     medium_button = Button(237.5, 450, 155, 50, 'Medium', "orange")
-    hard_button = Button(422.5, 450, 100, 50, 'Hard', "red")
+    hard_button = Button(422.5, 450, 100, 50, 'Hard', (220, 70, 70))
     start_buttons = [easy_button, medium_button, hard_button]
 
-    reset_button = Button(50, 655, 110, 50, 'Reset', 'blue')
-    restart_button = Button(240, 655, 150, 50, 'Restart', 'green')
-    exit_button = Button(480, 655, 100, 50, 'Exit', 'red')
+    reset_button = Button(50, 655, 110, 50, 'Reset', (60, 80, 180))
+    restart_button = Button(240, 655, 150, 50, 'Restart', (110, 220, 80))
+    exit_button = Button(480, 655, 100, 50, 'Exit', (220, 70, 70))
     in_game_buttons = [reset_button, restart_button, exit_button]
 
 
     board = None
+    '''
+    Cells and board are between a 630x630 square. (Total window 630x730)
+    '''
     playing = True
+    selection = False
     while playing:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.quit()
+                sys.exit()
             if state == 'start':
                 if event.type == pygame.MOUSEBUTTONDOWN:
                     if easy_button.button_click(event.pos):
-                        board = Board(630,730, screen, 'easy')
+                        board = Board(630, 730, screen, 'easy')
                         state = 'playing'
                     elif medium_button.button_click(event.pos):
-                        board = Board(630,730, screen, 'medium')
+                        board = Board(630, 730, screen, 'medium')
                         state = 'playing'
                     elif hard_button.button_click(event.pos):
                         board = Board(630, 730, screen, 'hard')
@@ -80,9 +88,50 @@ def main():
                 if event.type == pygame.MOUSEBUTTONDOWN:
                     if exit_button.button_click(event.pos):
                         pygame.quit()
+                        sys.exit()
+                    if restart_button.button_click(event.pos):
+                        print("restart")
+                    if reset_button.button_click(event.pos):
+                        print("reset")
+                    else:
+                        if selection:
+                            board.select(position[0],position[1])   # deselects previous cell
+                        x,y = event.pos
+                        position = board.click(x,y)                 # returns ordered_pair (x,y) [tuple] if the click is inside the board, else returns None
+                        if position:
+                            board.select(position[0],position[1])
+                            selection = True
+                        else:
+                            selection = False
+                if event.type == pygame.KEYDOWN and selection:
+                    ### Sketch values (when 1-9 is pressed)
+                    if event.key == pygame.K_1 or event.key == pygame.K_KP1:
+                        board.sketch(1)
+                    elif event.key == pygame.K_2 or event.key == pygame.K_KP2:
+                        board.sketch(2) 
+                    elif event.key == pygame.K_3 or event.key == pygame.K_KP3:
+                        board.sketch(3)  
+                    elif event.key == pygame.K_4 or event.key == pygame.K_KP4:
+                        board.sketch(4)   
+                    elif event.key == pygame.K_5 or event.key == pygame.K_KP5:
+                        board.sketch(5)  
+                    elif event.key == pygame.K_6 or event.key == pygame.K_KP6:
+                        board.sketch(6)  
+                    elif event.key == pygame.K_7 or event.key == pygame.K_KP7:
+                        board.sketch(7)   
+                    elif event.key == pygame.K_8 or event.key == pygame.K_KP8:
+                        board.sketch(8)  
+                    elif event.key == pygame.K_9 or event.key == pygame.K_KP9:
+                        board.sketch(9)
+                    ### Clear selected cell (When backspace is pressed)
+                    elif event.key == pygame.K_BACKSPACE or event.key == pygame.K_DELETE:
+                        board.clear()
+                    elif event.key == pygame.K_RETURN or event.key == pygame.K_KP_ENTER:
+                        pass
 
         if state == 'start':
             draw_start(screen, start_buttons)
+            
         elif state == 'playing':
             screen.fill('light blue')
             board.draw()

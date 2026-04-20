@@ -33,11 +33,14 @@ class Cell:
 
             self.screen.blit(number, num_pos)
 
-        elif self.sketched_value is not None:
+        elif self.sketched_value is not None:       # Shows cell sketched value at the tope left
             number = sketch_font.render(str(self.sketched_value), True, (255, 255, 255))
-            num_pos = number.get_rect(center=(x + cell_size//2, y + cell_size//2))
+            num_pos = number.get_rect(center=(x + cell_size//4, y + cell_size//4))
 
             self.screen.blit(number, num_pos)
 
         if self.selected:
-            pygame.draw.rect(self.screen, (255, 0, 0), (x, y, cell_size, cell_size), 2)
+            pygame.draw.rect(self.screen, (100, 160, 200), (x+1, y+1, cell_size, cell_size), 3)
+    
+    def __str__(self):
+        return f"{self.value} at ({self.col},{self.row})"
