@@ -1,3 +1,5 @@
+import copy
+
 import pygame
 from cell import Cell
 from sudoku_generator import SudokuGenerator
@@ -16,10 +18,21 @@ class Board:
         else:
             self.removed_cell = 50
 
-        self.original_board = SudokuGenerator(9, self.removed_cell)
-        self.board = SudokuGenerator(9, self.removed_cell)
+        self.sudoku_generator = SudokuGenerator(9, self.removed_cell)
+        self.sudoku_generator.fill_values()
 
+        self.solution = copy.deepcopy(self.sudoku_generator.get_board())
+        self.sudoku_generator.remove_cells()
 
+        self.board = self.sudoku_generator.get_board()
+        self.original_board = copy.deepcopy(self.board)
+
+        self.cells = [
+            [Cell(self.board[i][j], i, j, screen) for j in range(9)]
+            for i in range(9)
+        ]
+
+        self.selected = None
 
     def draw(self):
 
@@ -32,6 +45,9 @@ class Board:
             pygame.draw.line(self.screen, "black", (i*70, 0), (i*70,630), line_width)
             pygame.draw.line(self.screen, "black", (0, i * 70), (630, i*70), line_width)
 
+        for row in self.cells:
+            for cell in row:
+                cell.draw()
 
     def select(self, row, col):
         pass

@@ -7,6 +7,7 @@ class Cell:
         self.col = col
         self.screen = screen
         self.sketched_value = None
+        self.selected = False
 
 
     def set_cell_value(self, value):
@@ -19,4 +20,24 @@ class Cell:
 
 
     def draw(self):
-        pass
+        cell_size = 70
+        x = self.col * cell_size
+        y = self.row * cell_size
+
+        final_font = pygame.font.SysFont('Georgia', 40)
+        sketch_font = pygame.font.SysFont('Georgia', 30)
+
+        if self.value != 0:
+            number = final_font.render(str(self.value), True, (255, 255, 255))
+            num_pos = number.get_rect(center=(x + cell_size//2, y + cell_size//2))
+
+            self.screen.blit(number, num_pos)
+
+        elif self.sketched_value is not None:
+            number = sketch_font.render(str(self.sketched_value), True, (255, 255, 255))
+            num_pos = number.get_rect(center=(x + cell_size//2, y + cell_size//2))
+
+            self.screen.blit(number, num_pos)
+
+        if self.selected:
+            pygame.draw.rect(self.screen, (255, 0, 0), (x, y, cell_size, cell_size), 2)
