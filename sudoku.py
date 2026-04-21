@@ -89,9 +89,9 @@ def main():
                         pygame.quit()
                         sys.exit()
                     if restart_button.button_click(event.pos):
-                        pass
+                        state = 'start'
                     if reset_button.button_click(event.pos):
-                        pass
+                        board.reset_to_original()
                     else:
                         if selection:
                             board.select(position[0],position[1])   # deselects previous cell
