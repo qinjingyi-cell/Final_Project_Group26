@@ -21,8 +21,9 @@ class Board:
         self.sudoku_generator = SudokuGenerator(9, self.removed_cell)
         self.sudoku_generator.fill_values()
 
-        self.solution = copy.deepcopy(self.sudoku_generator.get_board())
+        
         self.sudoku_generator.remove_cells()
+        self.solution = copy.deepcopy(self.sudoku_generator.get_board())
 
         self.board = self.sudoku_generator.get_board()
         self.original_board = copy.deepcopy(self.board)
@@ -95,6 +96,9 @@ class Board:
 
 
     def reset_to_original(self):
+        self.board = self.solution
+        self.update_board()
+        self.draw()
         pass
 
 
@@ -103,7 +107,10 @@ class Board:
 
 
     def update_board(self):
-        pass
+        self.cells = [
+            [Cell(self.board[i][j], i, j, self.screen) for j in range(9)]
+            for i in range(9)
+        ]
 
 
     def find_empty(self):
@@ -112,4 +119,3 @@ class Board:
 
     def check_board(self):
         pass
-
