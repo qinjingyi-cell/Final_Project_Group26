@@ -55,13 +55,14 @@ class Board:
     And updates .selected attribute of board to cell.
     '''
     def select(self, row, col):
+        if self.selected:
+            self.selected.selected = False
+
         if self.original_board[col][row] == 0:
             self.selected = self.cells[col][row]
-            if self.selected.selected == False:
-                self.selected.selected = True
-            elif self.selected.selected == True:
-                self.selected.selected = False
-                self.selected = None
+            self.selected.selected = True
+        else:
+            self.selected = None
 
     '''
     When click
@@ -96,10 +97,9 @@ class Board:
 
 
     def reset_to_original(self):
-        self.board = self.solution
+        self.board = self.original_board
         self.update_board()
         self.draw()
-        pass
 
 
     def is_full(self):
