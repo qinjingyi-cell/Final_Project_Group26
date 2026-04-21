@@ -61,7 +61,6 @@ def main():
     exit_button = Button(480, 655, 100, 50, 'Exit', (220, 70, 70))
     in_game_buttons = [reset_button, restart_button, exit_button]
 
-
     board = None
     '''
     Cells and board are between a 630x630 square. (Total window 630x730)
@@ -90,9 +89,9 @@ def main():
                         pygame.quit()
                         sys.exit()
                     if restart_button.button_click(event.pos):
-                        print("restart")
+                        pass
                     if reset_button.button_click(event.pos):
-                        print("reset")
+                        pass
                     else:
                         if selection:
                             board.select(position[0],position[1])   # deselects previous cell
@@ -103,32 +102,23 @@ def main():
                             selection = True
                         else:
                             selection = False
+                        sketched_value = None
                 if event.type == pygame.KEYDOWN and selection:
                     ### Sketch values (when 1-9 is pressed)
-                    if event.key == pygame.K_1 or event.key == pygame.K_KP1:
-                        board.sketch(1)
-                    elif event.key == pygame.K_2 or event.key == pygame.K_KP2:
-                        board.sketch(2) 
-                    elif event.key == pygame.K_3 or event.key == pygame.K_KP3:
-                        board.sketch(3)  
-                    elif event.key == pygame.K_4 or event.key == pygame.K_KP4:
-                        board.sketch(4)   
-                    elif event.key == pygame.K_5 or event.key == pygame.K_KP5:
-                        board.sketch(5)  
-                    elif event.key == pygame.K_6 or event.key == pygame.K_KP6:
-                        board.sketch(6)  
-                    elif event.key == pygame.K_7 or event.key == pygame.K_KP7:
-                        board.sketch(7)   
-                    elif event.key == pygame.K_8 or event.key == pygame.K_KP8:
-                        board.sketch(8)  
-                    elif event.key == pygame.K_9 or event.key == pygame.K_KP9:
-                        board.sketch(9)
+                    key_name = pygame.key.name(event.key).strip("[]")
+                    if key_name.isdigit() and key_name != "0":
+                        number = int(key_name)
+                        board.sketch(number)
+                        sketched_value = number
                     ### Clear selected cell (When backspace is pressed)
                     elif event.key == pygame.K_BACKSPACE or event.key == pygame.K_DELETE:
                         board.clear()
+                    ### If there is a sketched value it will place it
                     elif event.key == pygame.K_RETURN or event.key == pygame.K_KP_ENTER:
-                        pass
-
+                        try:
+                            board.place_number(sketched_value)
+                        except UnboundLocalError:
+                            continue
         if state == 'start':
             draw_start(screen, start_buttons)
             
@@ -137,8 +127,6 @@ def main():
             board.draw()
             for button in in_game_buttons:
                 button.draw_button(screen)
-
-
         pygame.display.update()
 
 

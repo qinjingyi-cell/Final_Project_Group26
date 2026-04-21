@@ -50,12 +50,12 @@ class Board:
                 cell.draw()
 
     '''
-    Toggle .selected attribute of the given Cell if it has no value.
+    Toggle .selected attribute of the given Cell if it is originally empty.
+    And updates .selected attribute of board to cell.
     '''
     def select(self, row, col):
-        self.selected = self.cells[col][row]
-        print(self.selected)
-        if self.selected.value == 0:
+        if self.original_board[col][row] == 0:
+            self.selected = self.cells[col][row]
             if self.selected.selected == False:
                 self.selected.selected = True
             elif self.selected.selected == True:
@@ -70,19 +70,28 @@ class Board:
         ordered_pair = (x//70,y//70)
         return ordered_pair if all(coord < 9 for coord in ordered_pair) else None
 
-
+    '''
+    Clear sketched value of the selected cell.
+    '''
     def clear(self):
-        ### Clear sketched value
         if self.selected:
+            self.selected.value = 0
             self.selected.sketched_value = None
 
 
     def sketch(self, value):
-        self.selected.sketched_value = value
+        try:
+            self.selected.set_sketched_value(value)
+        except:
+            pass
 
 
     def place_number(self, value):
-        pass
+        try:
+            assert value != None
+            self.selected.set_cell_value(value)
+        except:
+            pass
 
 
     def reset_to_original(self):

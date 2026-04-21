@@ -24,18 +24,18 @@ class Cell:
         x = self.col * cell_size
         y = self.row * cell_size
 
-        final_font = pygame.font.SysFont('Georgia', 40)
-        sketch_font = pygame.font.SysFont('Georgia', 30)
+        final_font = pygame.font.SysFont('consolas', 40)
+        sketch_font = pygame.font.SysFont('consolas', 30)
 
         if self.value != 0:
             number = final_font.render(str(self.value), True, (255, 255, 255))
-            num_pos = number.get_rect(center=(x + cell_size//2, y + cell_size//2))
+            num_pos = number.get_rect(midbottom=(x + cell_size//2, y + cell_size))
 
             self.screen.blit(number, num_pos)
 
         elif self.sketched_value is not None:       # Shows cell sketched value at the tope left
             number = sketch_font.render(str(self.sketched_value), True, (255, 255, 255))
-            num_pos = number.get_rect(center=(x + cell_size//4, y + cell_size//4))
+            num_pos = number.get_rect(center=(x + cell_size//4, y + cell_size//3))
 
             self.screen.blit(number, num_pos)
 
