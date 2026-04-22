@@ -29,29 +29,31 @@ class Button:
 def draw_win_or_lost(screen, win):
     font = pygame.font.SysFont('Georgia', 40)
     if win:
-        screen.fill("darkolivegreen3")
-        title = font.render('You won', True, 'white')
+        background = pygame.image.load('background.png')
+        screen.blit(background, (0, 0))
+        title = font.render('You won!', True, 'black')
     else:
-        screen.fill("darksalmon")
-        title = font.render('You Lost', True, 'white')
-
+        background = pygame.image.load('background.png')
+        screen.blit(background, (0, 0))
+        title = font.render('Game Over :(', True, 'black')
 
     screen_width = screen.get_width()
-    title_pos = title.get_rect(center=(screen_width/2, 146))
+    title_pos = title.get_rect(center=(screen_width/2, 150))
 
     screen.blit(title, title_pos)
 
 
 def draw_start(screen, buttons):
-    screen.fill('light blue')
+    background = pygame.image.load('background.png')
+    screen.blit(background, (0,0))
 
     font = pygame.font.SysFont('Georgia', 40)
-    title = font.render('Welcome to Sudoku!', True, 'white')
-    difficulty_text = font.render('Select Game Mode:', True, 'white')
+    title = font.render('Welcome to Sudoku!', True, 'black')
+    difficulty_text = font.render('Select Game Mode:', True, 'black')
 
     screen_width = screen.get_width()
-    title_pos = title.get_rect(center=(screen_width/2, 146))
-    diff_text_pos = difficulty_text.get_rect(center=(screen_width/2, 365))
+    title_pos = title.get_rect(center=(screen_width/2, 75))
+    diff_text_pos = difficulty_text.get_rect(center=(screen_width/2, 150))
     screen.blit(title, title_pos)
     screen.blit(difficulty_text, diff_text_pos)
 
@@ -59,7 +61,7 @@ def draw_start(screen, buttons):
         button.draw_button(screen)
 
 
-# main game loop -Aaron
+# main game loop
 
 def main():
     pygame.init()
@@ -69,15 +71,22 @@ def main():
 
     state = 'start'
 
-    easy_button = Button(107.5,450,100,50, 'Easy', (110, 220, 80))
-    medium_button = Button(237.5, 450, 155, 50, 'Medium', "orange")
-    hard_button = Button(422.5, 450, 100, 50, 'Hard', (220, 70, 70))
+    #start buttons
+    easy_button = Button(107.5,195,100,50, 'Easy', (110, 220, 80))
+    medium_button = Button(237.5, 195, 155, 50, 'Medium', "orange")
+    hard_button = Button(422.5, 195, 100, 50, 'Hard', (220, 70, 70))
     start_buttons = [easy_button, medium_button, hard_button]
 
+    #playing buttons
     reset_button = Button(50, 655, 110, 50, 'Reset', (60, 80, 180))
     restart_button = Button(240, 655, 150, 50, 'Restart', (110, 220, 80))
     exit_button = Button(480, 655, 100, 50, 'Exit', (220, 70, 70))
     in_game_buttons = [reset_button, restart_button, exit_button]
+
+    #win/loss buttons
+    restart_button_end = Button(115, 195, 150, 50, 'Restart', (110, 220, 80))
+    exit_button_end = Button(365, 195, 100, 50, 'Exit', (220, 70, 70))
+    end_buttons = [restart_button_end, exit_button_end,]
 
     board = None
     '''
@@ -109,7 +118,7 @@ def main():
                         sys.exit()
                     if restart_button.button_click(event.pos):
                         state = 'start'
-                    if reset_button.button_click(event.pos):
+                    elif reset_button.button_click(event.pos):
                         board.reset_to_original()
                     else:
                         if selection:
@@ -146,23 +155,17 @@ def main():
 
             elif state=="lost":
                 if event.type == pygame.MOUSEBUTTONDOWN:
-                    if restart_button.button_click(event.pos):
-                        restart_button = Button(240, 655, 150, 50, 'Restart', (110, 220, 80))
-                        exit_button = Button(480, 655, 100, 50, 'Exit', (220, 70, 70))
+                    if restart_button_end.button_click(event.pos):
                         state = 'start'
-
-                    if exit_button.button_click(event.pos):
+                    elif exit_button_end.button_click(event.pos):
                         pygame.quit()
                         sys.exit()
 
             elif state=="win":
                 if event.type == pygame.MOUSEBUTTONDOWN:
                     if restart_button.button_click(event.pos):
-                        restart_button = Button(240, 655, 150, 50, 'Restart', (110, 220, 80))
-                        exit_button = Button(480, 655, 100, 50, 'Exit', (220, 70, 70))
                         state = 'start'
-
-                    if exit_button.button_click(event.pos):
+                    elif exit_button.button_click(event.pos):
                         pygame.quit()
                         sys.exit()
 
@@ -177,20 +180,16 @@ def main():
             board.draw()
             for button in in_game_buttons:
                 button.draw_button(screen)
-            
 
         elif state== "lost":
-            restart_button = Button(150, 350, 150, 50, 'Restart?', (110, 220, 80))
-            exit_button = Button(400, 350, 100, 50, 'Exit', (220, 70, 70))
             draw_win_or_lost(screen, False)
-            restart_button.draw_button(screen)
-            exit_button.draw_button(screen)
+            for button in end_buttons:
+                button.draw_button(screen)
             
         elif state=="win":
-            restart_button = Button(150, 350, 150, 50, 'Restart?', (110, 220, 80))
-            exit_button = Button(400, 350, 100, 50, 'Exit', (220, 70, 70))
             draw_win_or_lost(screen, True)
-            restart_button.draw_button(screen)
+            for button in end_buttons:
+                button.draw_button(screen)
             
         
         pygame.display.update()
