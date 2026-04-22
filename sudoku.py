@@ -25,6 +25,23 @@ class Button:
 
 #functions
 
+
+def draw_win_or_lost(screen, win):
+    font = pygame.font.SysFont('Georgia', 40)
+    if win:
+        screen.fill("darkolivegreen3")
+        title = font.render('You won', True, 'white')
+    else:
+        screen.fill("darksalmon")
+        title = font.render('You Lost', True, 'white')
+
+
+    screen_width = screen.get_width()
+    title_pos = title.get_rect(center=(screen_width/2, 146))
+
+    screen.blit(title, title_pos)
+
+
 def draw_start(screen, buttons):
     screen.fill('light blue')
 
@@ -48,6 +65,7 @@ def main():
     pygame.init()
     screen = pygame.display.set_mode((630, 730))
     pygame.display.set_caption('Sudoku!')
+    start_time = None
 
     state = 'start'
 
@@ -67,6 +85,7 @@ def main():
     '''
     playing = True
     selection = False
+
     while playing:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -119,14 +138,61 @@ def main():
                             board.place_number(sketched_value)
                         except UnboundLocalError:
                             continue
+                if board.is_full():
+                    
+                    if board.check_board():
+                        state="win"
+                    else: state="lost"
+
+            elif state=="lost":
+                if event.type == pygame.MOUSEBUTTONDOWN:
+                    if restart_button.button_click(event.pos):
+                        restart_button = Button(240, 655, 150, 50, 'Restart', (110, 220, 80))
+                        exit_button = Button(480, 655, 100, 50, 'Exit', (220, 70, 70))
+                        state = 'start'
+
+                    if exit_button.button_click(event.pos):
+                        pygame.quit()
+                        sys.exit()
+
+            elif state=="win":
+                if event.type == pygame.MOUSEBUTTONDOWN:
+                    if restart_button.button_click(event.pos):
+                        restart_button = Button(240, 655, 150, 50, 'Restart', (110, 220, 80))
+                        exit_button = Button(480, 655, 100, 50, 'Exit', (220, 70, 70))
+                        state = 'start'
+
+                    if exit_button.button_click(event.pos):
+                        pygame.quit()
+                        sys.exit()
+
+
+
         if state == 'start':
             draw_start(screen, start_buttons)
             
         elif state == 'playing':
+            
             screen.fill('light blue')
             board.draw()
             for button in in_game_buttons:
                 button.draw_button(screen)
+            
+
+        elif state== "lost":
+            restart_button = Button(150, 350, 150, 50, 'Restart?', (110, 220, 80))
+            exit_button = Button(400, 350, 100, 50, 'Exit', (220, 70, 70))
+            draw_win_or_lost(screen, False)
+            restart_button.draw_button(screen)
+            exit_button.draw_button(screen)
+            
+        elif state=="win":
+            restart_button = Button(50, 655, 150, 50, 'Restart?', (110, 220, 80))
+            exit_button = Button(480, 655, 100, 50, 'Exit', (220, 70, 70))
+            draw_win_or_lost(screen, True)
+            restart_button.draw_button(screen)
+            
+        
         pygame.display.update()
 
 
