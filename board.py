@@ -125,6 +125,14 @@ class Board:
     def check_board(self):
         for i in range(9):
             for j in range(9):
-                if not self.sudoku_generator.is_valid(i, j, self.cells[i][j].value):
+                val = self.cells[i][j].value
+
+                self.sudoku_generator.board[i][j] = 0
+
+                if not self.sudoku_generator.is_valid(i, j, val):
+                    self.sudoku_generator.board[i][j] = val
                     return False
+
+                self.sudoku_generator.board[i][j] = val
+
         return True
