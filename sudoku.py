@@ -187,8 +187,8 @@ def main():
             exit_button.draw_button(screen)
             
         elif state=="win":
-            restart_button = Button(50, 655, 150, 50, 'Restart?', (110, 220, 80))
-            exit_button = Button(480, 655, 100, 50, 'Exit', (220, 70, 70))
+            restart_button = Button(150, 350, 150, 50, 'Restart?', (110, 220, 80))
+            exit_button = Button(400, 350, 100, 50, 'Exit', (220, 70, 70))
             draw_win_or_lost(screen, True)
             restart_button.draw_button(screen)
             
