@@ -7,13 +7,11 @@ from board import Board
 class Button:
     def __init__(self, x, y, width, height, text, color, text_color='white'):
         self.rect = pygame.Rect(x, y, width, height)
-        self.back_rect = pygame.Rect(x-5,y-5,width+5,height+5)
         self.text = text
         self.color = color
         self.text_color = text_color
 
     def draw_button(self, screen):
-        pygame.draw.rect(screen, (129, 188, 214), self.back_rect)
         pygame.draw.rect(screen, self.color, self.rect)
         font = pygame.font.SysFont('Georgia', 35)
         text_render = font.render(self.text, True, self.text_color)
@@ -28,14 +26,10 @@ class Button:
 
 def draw_win_or_lost(screen, win):
     font = pygame.font.SysFont('Georgia', 40)
-    if win:
-        background = pygame.image.load('background.png')
-        screen.blit(background, (0, 0))
-        title = font.render('You won!', True, 'black')
-    else:
-        background = pygame.image.load('background.png')
-        screen.blit(background, (0, 0))
-        title = font.render('Game Over :(', True, 'black')
+    background = pygame.image.load('background.png')
+    screen.blit(background, (0, 0))
+    text = 'You won!' if win else 'Game Over :('
+    title = font.render(text, True, 'black')
 
     screen_width = screen.get_width()
     title_pos = title.get_rect(center=(screen_width/2, 150))
@@ -67,7 +61,6 @@ def main():
     pygame.init()
     screen = pygame.display.set_mode((630, 730))
     pygame.display.set_caption('Sudoku!')
-    start_time = None
 
     state = 'start'
 
@@ -116,7 +109,7 @@ def main():
                     if exit_button.button_click(event.pos):
                         pygame.quit()
                         sys.exit()
-                    if restart_button.button_click(event.pos):
+                    elif restart_button.button_click(event.pos):
                         state = 'start'
                     elif reset_button.button_click(event.pos):
                         board.reset_to_original()
@@ -130,25 +123,42 @@ def main():
                             selection = True
                         else:
                             selection = False
-                        sketched_value = None
                 if event.type == pygame.KEYDOWN and selection:
                     ### Sketch values (when 1-9 is pressed)
                     key_name = pygame.key.name(event.key).strip("[]")
                     if key_name.isdigit() and key_name != "0":
                         number = int(key_name)
                         board.sketch(number)
-                        sketched_value = number
                     ### Clear selected cell (When backspace is pressed)
+                    elif event.key in [pygame.K_UP,pygame.K_DOWN,pygame.K_RIGHT,pygame.K_LEFT]:
+                        suby = y
+                        subx = x
+                        try:
+                            if event.key == pygame.K_UP:
+                                suby -= 70
+                            if event.key == pygame.K_DOWN:
+                                suby += 70
+                            if event.key == pygame.K_RIGHT:
+                                subx += 70
+                            if event.key == pygame.K_LEFT:
+                                subx -= 70
+                            if subx < 0 or suby < 0 or subx > 630 or suby > 630:
+                                suby = y
+                                subx = x
+                                break
+                            position = board.click(subx,suby)
+                            board.select(position[0],position[1])
+                            x, y = subx, suby
+                            continue
+                        except TypeError as e:
+                            continue
                     elif event.key == pygame.K_BACKSPACE or event.key == pygame.K_DELETE:
                         board.clear()
                     ### If there is a sketched value it will place it
                     elif event.key == pygame.K_RETURN or event.key == pygame.K_KP_ENTER:
-                        try:
-                            board.place_number(sketched_value)
-                        except UnboundLocalError:
-                            continue
+                        if board.selected.sketched_value is not None:
+                            board.place_number(board.selected.sketched_value)
                 if board.is_full():
-                    
                     if board.check_board():
                         state="win"
                     else: state="lost"
@@ -163,9 +173,9 @@ def main():
 
             elif state=="win":
                 if event.type == pygame.MOUSEBUTTONDOWN:
-                    if restart_button.button_click(event.pos):
+                    if restart_button_end.button_click(event.pos):
                         state = 'start'
-                    elif exit_button.button_click(event.pos):
+                    elif exit_button_end.button_click(event.pos):
                         pygame.quit()
                         sys.exit()
 

@@ -37,6 +37,9 @@ class Board:
 
     def draw(self):
 
+        for row in self.cells:          # draw cells (cell class function)
+            for cell in row:
+                cell.draw()
         for i in range(10):             # draw grid
             if i % 3 == 0:
                 line_width = 4
@@ -46,24 +49,19 @@ class Board:
             pygame.draw.line(self.screen, "white", (i*70, 0), (i*70,630), line_width)
             pygame.draw.line(self.screen, "white", (0, i * 70), (630, i*70), line_width)
 
-        for row in self.cells:          # draw cells (cell class function)
-            for cell in row:
-                cell.draw()
 
     '''
     Toggle .selected attribute of the given Cell if it is originally empty.
     And updates .selected attribute of board to cell.
     '''
-    def select(self, row, col):
+    def select(self, col, row):
         if self.selected:
             self.selected.selected = False
-
-        if self.original_board[col][row] == 0:
-            self.selected = self.cells[col][row]
+        if col < 9 and row < 9:
+            self.selected = self.cells[row][col]
             self.selected.selected = True
         else:
             self.selected = None
-
     '''
     When click
     input: x-position and y-position and output: row and col if it is between the displayed board (630x630)
@@ -76,24 +74,19 @@ class Board:
     Clear sketched value of the selected cell.
     '''
     def clear(self):
-        if self.selected:
+        if self.selected and self.selected.sketched_value != None:
             self.selected.value = 0
-            self.selected.sketched_value = None
+            self.selected.sketched_value = 0
 
 
     def sketch(self, value):
-        try:
+        if self.selected.sketched_value != None:
             self.selected.set_sketched_value(value)
-        except:
-            pass
 
 
     def place_number(self, value):
-        try:
-            assert value != None
+        if self.selected.sketched_value != None:
             self.selected.set_cell_value(value)
-        except:
-            pass
 
 
     def reset_to_original(self):
